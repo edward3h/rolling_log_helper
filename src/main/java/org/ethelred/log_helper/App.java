@@ -15,6 +15,7 @@ import java.util.concurrent.Callable;
 import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
 
 @Command(
@@ -74,6 +75,12 @@ public class App implements Callable<Integer> {
   private String name;
   private String extension;
 
+  @Option(
+      names = {"-d", "--debug"},
+      defaultValue = "false",
+      description = "log to console as well as file")
+  private boolean console;
+
   private Logger configureLogging() {
     LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
     PatternLayoutEncoder ple = new PatternLayoutEncoder();
@@ -98,9 +105,9 @@ public class App implements Callable<Integer> {
 
     Logger appLogger = (Logger) LoggerFactory.getLogger(App.class);
     appLogger.addAppender(appender);
-    appLogger.setAdditive(true);
+    appLogger.setAdditive(console);
 
-    StatusPrinter.print(lc);
+    if (console) StatusPrinter.print(lc);
     return appLogger;
   }
 }
