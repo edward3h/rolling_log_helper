@@ -21,7 +21,6 @@ import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
-import org.slf4j.LoggerFactory;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -41,7 +40,7 @@ public class App implements Callable<Integer> {
   @Override
   public Integer call() throws Exception {
 
-    org.slf4j.Logger logger = configureLogging();
+    Logger logger = configureLogging();
 
     try (BufferedReader r = new BufferedReader(new InputStreamReader(System.in))) {
       for (String line = r.readLine(); line != null; line = r.readLine()) {
@@ -134,7 +133,7 @@ public class App implements Callable<Integer> {
   }
 
   private Logger configureLogging() {
-    LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+    LoggerContext lc = new LoggerContext();
     PatternLayoutEncoder ple = new PatternLayoutEncoder();
 
     ple.setPattern("[%d{yyyy-MM-dd HH:mm:ss}] %msg%n");
@@ -155,7 +154,7 @@ public class App implements Callable<Integer> {
     rollingPolicy.start();
     appender.start();
 
-    Logger appLogger = (Logger) LoggerFactory.getLogger(App.class);
+    Logger appLogger = lc.getLogger(App.class);
     appLogger.addAppender(appender);
     appLogger.setAdditive(console);
 
